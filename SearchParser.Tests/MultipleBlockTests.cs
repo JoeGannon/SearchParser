@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace SearchParser.Tests
 {
-    public class ChildrenBlockTests
+    public class MultipleBlockTests
     {
         private HtmlDocument _htmlDocument = new();
 
-        public ChildrenBlockTests()
+        public MultipleBlockTests()
         {
             _htmlDocument.LoadHtml("<div id='IdOne' class='TestClass'> Child One </div>" +
                                    "<div id='IdTwo' class='TestClass'> Child Two </div>");

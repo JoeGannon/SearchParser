@@ -1,7 +1,7 @@
 ﻿using Fixie;
 using System.Threading.Tasks;
 
-namespace SearchParser.Tests
+namespace SearchParser.Tests.Conventions
 {
     public class FixieSingleInstanceExecution : IExecution
     {

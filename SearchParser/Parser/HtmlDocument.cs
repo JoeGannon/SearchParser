@@ -5,6 +5,9 @@ namespace SearchParser.Parser
 {
     public class HtmlDocument
     {
+        private const int openDivLength = 4;
+        private const int closeDivLength = 6;
+
         //todo should just capture all attributes
         private string[] _capturedAttributes = { "id", "class" };
 
@@ -24,13 +27,46 @@ namespace SearchParser.Parser
 
         public void LoadHtml(string html)
         {
-            var nodes = html.Split("<div");
+            LoadNodes(html, null);
+        }
 
-            foreach (var node in nodes.Skip(1))
+        //assumes proper html and standard spacing
+        private void LoadNodes(string html, HtmlNode innerNode)
+        {
+            var closingTagIndex = html.IndexOf("</div>");
+
+            var openDivIndex = html.IndexOf("<div", openDivLength);
+
+            var hasNestedDiv = openDivIndex < closingTagIndex && openDivIndex != -1;
+
+            if (hasNestedDiv)
             {
-                var htmlNode = GetHtmlNode(node);
+                var openingTagIndex = html.LastIndexOf("<div", closingTagIndex);
 
-                HtmlNodes.Add(htmlNode);
+                var nestedDiv = html.Substring(openingTagIndex, closingTagIndex - openingTagIndex + closeDivLength);
+
+                var node = GetHtmlNode(nestedDiv);
+                
+                HtmlNodes.Add(node);
+
+                var outerNodeHtml = html.Replace(nestedDiv, "");
+
+                LoadNodes(outerNodeHtml, node);
+            }
+            else
+            {
+                var htmlNode = html.Substring(html.IndexOf("<div"), closingTagIndex + closeDivLength);
+
+                var node = GetHtmlNode(htmlNode);
+
+                node.InnerNode = innerNode;
+
+                HtmlNodes.Add(node);
+
+                var slice = html.Substring(closingTagIndex + closeDivLength);
+
+                if (!string.IsNullOrWhiteSpace(slice))
+                    LoadNodes(slice, null);
             }
         }
 
@@ -57,7 +93,7 @@ namespace SearchParser.Parser
 
             foreach (var attribute in _capturedAttributes)
             {
-                if (openingTag.Contains(attribute))
+                if (openingTag.Contains(" " + attribute + "="))
                 {
                     var enclosingQuote = openingTag.Split(attribute + "=")[1][0];
 

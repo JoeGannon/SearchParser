@@ -1,6 +1,6 @@
 ﻿using Fixie;
 
-namespace SearchParser.Tests
+namespace SearchParser.Tests.Conventions
 {
     public class FixieProject : ITestProject
     {
