@@ -16,7 +16,7 @@ namespace SearchParser.Tests
 
         public void HasSingleNode()
         {
-            _htmlDocument.HtmlNodes.Count.ShouldBe(1);            
+            _htmlDocument.HtmlNodes.Count().ShouldBe(1);
         }
 
         public void SetInnerText()

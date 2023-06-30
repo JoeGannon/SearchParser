@@ -16,7 +16,7 @@ namespace SearchParser.Tests
 
         public void HasMultipleNodes()
         {
-            _htmlDocument.HtmlNodes.Count.ShouldBe(2);
+            _htmlDocument.HtmlNodes.Count().ShouldBe(2);
         }
 
         public void ChildOneSetCorrectly()

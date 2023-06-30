@@ -1,5 +1,6 @@
 ﻿using SearchParser.Parser;
 using Shouldly;
+using System.Linq;
 
 namespace SearchParser.Tests
 {
@@ -16,7 +17,7 @@ namespace SearchParser.Tests
 
         public void HasFourNodes()
         {
-            _htmlDocument.HtmlNodes.Count.ShouldBe(4);
+            _htmlDocument.HtmlNodes.Count().ShouldBe(4);
         }
 
         public void GetNestedChild()

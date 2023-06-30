@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SearchParser.Parser
@@ -10,8 +11,9 @@ namespace SearchParser.Parser
 
         //todo should just capture all attributes
         private string[] _capturedAttributes = { "id", "class" };
+        private readonly List<HtmlNode> _htmlNodes = new();
 
-        public List<HtmlNode> HtmlNodes { get; set; } = new();        
+        public IEnumerable<HtmlNode> HtmlNodes => _htmlNodes;
 
         public HtmlNode GetNodeById(string value) => GetNodesBy("id", value).FirstOrDefault();
 
@@ -27,6 +29,9 @@ namespace SearchParser.Parser
 
         public void LoadHtml(string html)
         {
+            if (string.IsNullOrWhiteSpace(html))
+                throw new ArgumentNullException(html);
+
             LoadNodes(html, null);
         }
 
@@ -46,8 +51,8 @@ namespace SearchParser.Parser
                 var nestedDiv = html.Substring(openingTagIndex, closingTagIndex - openingTagIndex + closeDivLength);
 
                 var node = GetHtmlNode(nestedDiv);
-                
-                HtmlNodes.Add(node);
+
+                _htmlNodes.Add(node);
 
                 var outerNodeHtml = html.Replace(nestedDiv, "");
 
@@ -61,7 +66,7 @@ namespace SearchParser.Parser
 
                 node.InnerNode = innerNode;
 
-                HtmlNodes.Add(node);
+                _htmlNodes.Add(node);
 
                 var slice = html.Substring(closingTagIndex + closeDivLength);
 
@@ -78,7 +83,7 @@ namespace SearchParser.Parser
             var innerText = htmlNode.Substring(startIndex, endIndex - startIndex).Trim();
 
             var openingTag = htmlNode.Substring(0, htmlNode.IndexOf(">"));
-            var attributes = ReadAttributes(openingTag);
+            var attributes = GetAttributes(openingTag);
 
             return new HtmlNode
             {
@@ -87,7 +92,7 @@ namespace SearchParser.Parser
             };
         }
 
-        private Dictionary<string, string> ReadAttributes(string openingTag)
+        private Dictionary<string, string> GetAttributes(string openingTag)
         {
             var attributes = new Dictionary<string, string>();
 
